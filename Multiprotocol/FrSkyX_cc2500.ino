@@ -123,7 +123,7 @@ static uint16_t  __attribute__((unused)) frskyX_scaleForPXX_FS( uint8_t i )
 #endif
 
 #define FRX_FAILSAFE_TIME 1032
-static void __attribute__((unused)) frskyX_data_frame()
+void frskyX_data_frame()
 {
 	//0x1D 0xB3 0xFD 0x02 0x56 0x07 0x15 0x00 0x00 0x00 0x04 0x40 0x00 0x04 0x40 0x00 0x04 0x40 0x00 0x04 0x40 0x08 0x00 0x00 0x00 0x00 0x00 0x00 0x96 0x12
 	//
@@ -229,6 +229,8 @@ static void __attribute__((unused)) frskyX_data_frame()
 	uint16_t lcrc = frskyX_crc_x(&packet[3], limit-3);
 	packet[limit++]=lcrc>>8;//high byte
 	packet[limit]=lcrc;//low byte
+
+	DEBUG_PIN_toggle;
 }
 
 uint16_t ReadFrSkyX()
@@ -267,6 +269,7 @@ uint16_t ReadFrSkyX()
 			hopping_frequency_no = (hopping_frequency_no+FrX_chanskip)%47;
 			CC2500_Strobe(CC2500_SIDLE);		
 			CC2500_WriteData(packet, packet[0]+1);
+			JUST_SENT_FRAME_on;
 			//
 //			frskyX_data_frame();
 			state++;
@@ -309,7 +312,7 @@ uint16_t ReadFrSkyX()
 				}
 				CC2500_Strobe(CC2500_SFRX);			//flush the RXFIFO
 			}
-			frskyX_data_frame();
+			// frskyX_data_frame();
 			if ( FrX_send_seq != 0x08 )
 			{
 				FrX_send_seq = ( FrX_send_seq + 1 ) & 0x03 ;

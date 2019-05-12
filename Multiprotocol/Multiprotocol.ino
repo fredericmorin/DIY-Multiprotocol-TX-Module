@@ -22,8 +22,8 @@
 */
 #include <avr/pgmspace.h>
 
-//#define DEBUG_PIN		// Use pin TX for AVR and SPI_CS for STM32 => DEBUG_PIN_on, DEBUG_PIN_off, DEBUG_PIN_toggle
-//#define DEBUG_SERIAL	// Only for STM32_BOARD, compiled with Upload method "Serial"->usart1, "STM32duino bootloader"->USB serial
+#define DEBUG_PIN		// Use pin TX for AVR and SPI_CS for STM32 => DEBUG_PIN_on, DEBUG_PIN_off, DEBUG_PIN_toggle
+#define DEBUG_SERIAL	// Only for STM32_BOARD, compiled with Upload method "Serial"->usart1, "STM32duino bootloader"->USB serial
 
 #ifdef __arm__			// Let's automatically select the board if arm is selected
 	#define STM32_BOARD
@@ -137,7 +137,7 @@ const uint8_t CH_EATR[]={ELEVATOR, AILERON, THROTTLE, RUDDER, CH5, CH6, CH7, CH8
 
 // Mode_select variables
 uint8_t mode_select;
-uint8_t protocol_flags=0,protocol_flags2=0;
+uint8_t protocol_flags=0,protocol_flags2=0,protocol_flags3=0;
 
 #ifdef ENABLE_PPM
 // PPM variable
@@ -547,11 +547,11 @@ void loop()
 				next_callback=2000;					// No PPM/serial signal check again in 2ms...
 			TX_MAIN_PAUSE_off;
 			tx_resume();
-			while(next_callback>4000)
+			while(next_callback>1000)
 			{ // start to wait here as much as we can...
-				next_callback-=2000;				// We will wait below for 2ms
+				next_callback-=500;				// We will wait below for 2ms
 				cli();								// Disable global int due to RW of 16 bits registers
-				OCR1A += 2000*2 ;					// set compare A for callback
+				OCR1A += 500*2 ;					// set compare A for callback
 				#ifndef STM32_BOARD	
 					TIFR1=OCF1A_bm;					// clear compare A=callback flag
 				#else
@@ -570,9 +570,8 @@ void loop()
 				#endif
 			}
 			// at this point we have a maximum of 4ms in next_callback
-			next_callback *= 2 ;
 			cli();									// Disable global int due to RW of 16 bits registers
-			OCR1A+= next_callback ;					// set compare A for callback
+			OCR1A+= next_callback *= 2  ;					// set compare A for callback
 			#ifndef STM32_BOARD			
 				TIFR1=OCF1A_bm;						// clear compare A=callback flag
 			#else
@@ -586,6 +585,7 @@ void loop()
 	}
 }
 
+void frskyX_data_frame();
 uint8_t Update_All()
 {
 	#ifdef ENABLE_SERIAL
@@ -597,6 +597,7 @@ uint8_t Update_All()
 		if(mode_select==MODE_SERIAL && IS_RX_FLAG_on)		// Serial mode and something has been received
 		{
 			update_serial_data();							// Update protocol and data
+			frskyX_data_frame();							// prepare outgoing frame buffer with the most up to date data
 			update_channels_aux();
 			INPUT_SIGNAL_on;								//valid signal received
 			last_signal=millis();
@@ -627,7 +628,10 @@ uint8_t Update_All()
 		#if ( !( defined(MULTI_TELEMETRY) || defined(MULTI_STATUS) ) )
 			if( (protocol==PROTO_FRSKYD) || (protocol==PROTO_BAYANG) || (protocol==PROTO_NCC1701) || (protocol==PROTO_BUGS) || (protocol==PROTO_BUGSMINI) || (protocol==PROTO_HUBSAN) || (protocol==PROTO_AFHDS2A) || (protocol==PROTO_FRSKYX) || (protocol==PROTO_DSM) || (protocol==PROTO_CABELL)  || (protocol==PROTO_HITEC))
 		#endif
-				TelemetryUpdate();
+	if (IS_JUST_SENT_FRAME_on) {
+		TelemetryUpdate();
+		JUST_SENT_FRAME_off;
+	}
 	#endif
 	#ifdef ENABLE_BIND_CH
 		if(IS_AUTOBIND_FLAG_on && IS_BIND_CH_PREV_off && Channel_data[BIND_CH-1]>CHANNEL_MAX_COMMAND && Channel_data[THROTTLE]<(CHANNEL_MIN_100+50))
@@ -1441,6 +1445,7 @@ void update_serial_data()
 				Channel_data[i]=temp;			//value range 0..2047, 0=-125%, 2047=+125%
 	}
 	RX_DONOTUPDATE_off;
+
 	#ifdef ORANGE_TX
 		cli();
 	#else
@@ -1524,7 +1529,7 @@ void modules_reset()
 			else
 		#endif // CHECK_FOR_BOOTLOADER
 		{
-			usart2_begin(100000,SERIAL_8E2);
+			usart2_begin(250000,SERIAL_8E2);
 			USART2_BASE->CR1 |= USART_CR1_PCE_BIT;
 		}
 		usart3_begin(100000,SERIAL_8E2);

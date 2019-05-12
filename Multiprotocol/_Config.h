@@ -73,10 +73,10 @@
 //If a chip is not installed all associated protocols are automatically disabled.
 //4-in-1 modules have all RF chips installed
 //!!!If a RF chip is present it MUST be marked as installed!!! or weird things will happen you have been warned.
-#define A7105_INSTALLED
-#define CYRF6936_INSTALLED
+//#define A7105_INSTALLED
+//#define CYRF6936_INSTALLED
 #define CC2500_INSTALLED
-#define NRF24L01_INSTALLED
+//#define NRF24L01_INSTALLED
 
 //If available use the CC2500 to emulate the XN297L @250Kbps instead of the NRF24L01. Comment to disable.
 #define XN297L_CC2500_EMU
@@ -88,7 +88,7 @@
 
 /** CC2500 Fine Frequency Tuning **/
 //For optimal performance the CC2500 RF module used by the FrSkyD, FrSkyV, FrSkyX, SFHSS, CORONA, Redpine and Hitec protocols needs to be tuned for each protocol.
-//Initial tuning should be done via the radio menu with a genuine FrSky/Futaba/CORONA/Hitec/Redpine receiver.  
+//Initial tuning should be done via the radio menu with a genuine FrSky/Futaba/CORONA/Hitec/Redpine receiver.
 //Once a good tuning value is found it can be set here and will override the radio's 'option' setting for all existing and new models which use that protocol.
 //For more information: https://github.com/pascallanger/DIY-Multiprotocol-TX-Module/tree/master/docs/Frequency_Tuning.md
 //Uncomment the lines below (remove the "//") and set an appropriate value (replace the "0") to enable. Valid range is -127 to +127.
@@ -123,7 +123,7 @@
 /** Low Power **/
 //Low power is reducing the transmit power of the multi module. This setting is configurable per model in PPM (table below) or Serial mode (radio GUI).
 //It can be activated when flying indoor or small models since the distance is short or if a model is causing issues when flying closed to the TX.
-//By default low power is completly disabled on all rf chips to prevent mistakes, but you can enable it by uncommenting the lines below: 
+//By default low power is completly disabled on all rf chips to prevent mistakes, but you can enable it by uncommenting the lines below:
 //#define A7105_ENABLE_LOW_POWER
 //#define CYRF6936_ENABLE_LOW_POWER
 //#define CC2500_ENABLE_LOW_POWER
@@ -170,12 +170,12 @@
 #define	WK2x01_CYRF6936_INO
 
 //The protocols below need a CC2500 to be installed
-#define	CORONA_CC2500_INO
+//#define	CORONA_CC2500_INO
 #define	FRSKYD_CC2500_INO
-#define	FRSKYV_CC2500_INO
+//#define	FRSKYV_CC2500_INO
 #define	FRSKYX_CC2500_INO
-#define	HITEC_CC2500_INO
-#define	SFHSS_CC2500_INO
+// #define	HITEC_CC2500_INO
+// #define	SFHSS_CC2500_INO
 #define	REDPINE_CC2500_INO
 
 //The protocols below need a NRF24L01 to be installed
@@ -227,7 +227,7 @@
 // You can disable this feature by adding "//" on the line below. You have to specify which channel (14 by default) will be used to kill the throttle channel.
 // If the channel 14 is above -50% the throttle is untouched but if it is between -50% and -100%, the throttle output will be forced between -100% and -150%.
 // For example, a value of -80% applied on channel 15 will instantly kill the motors on the X-Vert.
-#define DSM_THROTTLE_KILL_CH 14 
+#define DSM_THROTTLE_KILL_CH 14
 
 //AFHDS2A specific settings
 //-------------------------
@@ -242,7 +242,7 @@
 //  Devo, WK2x01, SFHSS, HISKY/HK310 and AFHDS2A
 //All channels are centered except throttle which is forced low.
 //If you want to diasble failsafe globally comment the line below using "//".
-#define FAILSAFE_ENABLE
+//#define FAILSAFE_ENABLE
 
 //Failsafe throttle low value in percentage.
 //Value between -125% and +125%. Default -100.
@@ -318,7 +318,7 @@
 /*************************/
 //In this section you can configure all details about PPM.
 //If you do not plan to use the PPM mode comment this line using "//" to save Flash space, you don't need to configure anything below in this case
-#define ENABLE_PPM
+//#define ENABLE_PPM
 
 /** TX END POINTS **/
 //It is important for the module to know the endpoints of your radio.

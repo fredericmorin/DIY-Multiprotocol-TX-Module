@@ -393,6 +393,10 @@ enum MultiPacketTypes
 #define WAIT_BIND_on		protocol_flags2 |= _BV(7)
 #define IS_WAIT_BIND_on		( ( protocol_flags2 & _BV(7) ) !=0 )
 #define IS_WAIT_BIND_off	( ( protocol_flags2 & _BV(7) ) ==0 )
+// just sent frame
+#define JUST_SENT_FRAME_off	protocol_flags3 &= ~_BV(0)
+#define JUST_SENT_FRAME_on		protocol_flags3 |= _BV(0)
+#define IS_JUST_SENT_FRAME_on	( ( protocol_flags3 & _BV(0) ) !=0 )
 
 // Failsafe
 #define FAILSAFE_CHANNEL_HOLD		2047
